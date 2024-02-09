@@ -1,7 +1,7 @@
-import { Main } from "./view/main";
+import { Router } from "./router";
 
 function App() {
-  return <Main />;
+  return <Router />;
 }
 
 export default App;
