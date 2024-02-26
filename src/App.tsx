@@ -1,7 +1,12 @@
-import { Router } from "./router";
+import {Router} from "./router";
+import {CountriesProvider} from "@/context/CountriesContext.tsx";
 
 function App() {
-  return <Router />;
+  return (
+    <CountriesProvider>
+      <Router/>
+    </CountriesProvider>
+  );
 }
 
 export default App;

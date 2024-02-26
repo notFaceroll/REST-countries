@@ -6,12 +6,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
+import {Input} from "@/components/ui/input";
+import {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Skeleton} from "@/components/ui/skeleton";
+import {useCountries} from "@/context/CountriesContext.tsx";
 
 interface Flag {
   png: string;
@@ -53,6 +54,7 @@ export interface CountryInfo {
   borders: string[];
 }
 
+
 export function Home() {
   const [countriesList, setCountriesList] = useState<CountryInfo[]>([]);
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
@@ -61,22 +63,11 @@ export function Home() {
 
   const navigate = useNavigate();
 
-  async function fetchCountries() {
-    try {
-      const response = await fetch(
-        "https://restcountries.com/v3.1/all?fields=name,capital,currencies,population,region,flags,cca3,subregion,tld,currencies,languages,borders"
-      );
-      const data: CountryInfo[] = await response.json();
-
-      setCountriesList(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const {countriesList: cList, isLoading} = useCountries();
 
   useEffect(() => {
-    fetchCountries();
-  }, []);
+    setCountriesList([...cList.values()]);
+  }, [countriesList]);
 
   useEffect(() => {
     if (selectedRegion === "all") {
@@ -90,11 +81,13 @@ export function Home() {
     }
   }, [selectedRegion, countriesList]);
 
+
+
   const filteredCountries =
     searchTerm.length > 0
       ? regionCountries.filter((country: CountryInfo) =>
-          country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        country.name.common.toLowerCase().includes(searchTerm.toLowerCase())
+      )
       : regionCountries;
 
   function formatPopulationNumber(population: number) {
@@ -106,18 +99,18 @@ export function Home() {
   }
 
   function handleNavigation(country: CountryInfo) {
-    navigate(`/${country.cca3}`, { state: { country } });
+    navigate(`/${country.cca3}`, {state: {country}});
   }
 
-  if (!countriesList.length) {
+  if (isLoading) {
     return (
       <div className="p-6">
         <div className="flex flex-col space-y-10">
           <div className="space-y-4">
-            <Skeleton className="h-[40px] w-full rounded-xl" />
-            <Skeleton className="h-[40px] w-full rounded-xl" />
+            <Skeleton className="h-[40px] w-full rounded-xl"/>
+            <Skeleton className="h-[40px] w-full rounded-xl"/>
           </div>
-          <Skeleton className="w-full h-[400px]" />
+          <Skeleton className="w-full h-[400px]"/>
         </div>
       </div>
     );
@@ -125,7 +118,8 @@ export function Home() {
 
   return (
     <main className="flex-1 max-w-[1440px] w-full m-auto px-4 xl:px-0">
-      <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 justify-between px-2 items-center py-10 sticky top-0 bg-very-light-gray-light-mode-background dark:bg-very-dark-blue-dark-mode-background">
+      <div
+        className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 justify-between px-2 items-center py-10 sticky top-0 bg-very-light-gray-light-mode-background dark:bg-very-dark-blue-dark-mode-background">
         <Input
           type="text"
           placeholder="Search for a country"
@@ -134,10 +128,12 @@ export function Home() {
         />
 
         <Select onValueChange={handleRegionChange}>
-          <SelectTrigger className="sm:w-[180px] dark:bg-dark-blue-dark-mode-elements bg-white dark:text-white text-very-dark-blue-light-mode-text">
-            <SelectValue placeholder="Filter by Region" />
+          <SelectTrigger
+            className="max-w-sm sm:w-[180px] dark:bg-dark-blue-dark-mode-elements bg-white dark:text-white text-very-dark-blue-light-mode-text">
+            <SelectValue placeholder="Filter by Region"/>
           </SelectTrigger>
-          <SelectContent className="dark:bg-dark-blue-dark-mode-elements bg-white dark:text-white text-very-dark-blue-light-mode-text">
+          <SelectContent
+            className="dark:bg-dark-blue-dark-mode-elements bg-white dark:text-white text-very-dark-blue-light-mode-text">
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="americas">Americas</SelectItem>
             <SelectItem value="africa">Africa</SelectItem>
@@ -148,20 +144,23 @@ export function Home() {
         </Select>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 px-2">
+      <div
+        className="grid grid-cols-1 place-items-center lg:place-items-stretch  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-2">
         {filteredCountries?.map((country: CountryInfo) => (
           <Card
             onClick={() => {
               handleNavigation(country);
             }}
             key={country.name.common}
-            className="overflow-hidden min-h-[320px] dark:bg-dark-blue-dark-mode-elements bg-white border-0 shadow-md cursor-pointer"
+            className="overflow-hidden w-[300px] lg:w-auto h-[420px] dark:bg-dark-blue-dark-mode-elements bg-white border-0 shadow-md cursor-pointer"
           >
-            <img
-              className="max-w-full block object-cover h-2/5 w-full"
-              src={country.flags.png}
-              alt={country.name.common}
-            />
+            <div className="aspect-video max-h-[40%] w-full">
+              <img
+                className="block object-cover h-full w-full"
+                src={country.flags.png}
+                alt={country.name.common}
+              />
+            </div>
 
             <CardHeader>
               <CardTitle>{country.name.common}</CardTitle>
