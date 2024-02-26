@@ -1,5 +1,6 @@
 import {createContext, ReactNode, useContext, useEffect, useState} from "react";
 import {CountryInfo} from "@/view/home";
+import {sleep} from "@/lib/utils.ts";
 
 interface CountriesContextValue {
   countriesList: Map<string, CountryInfo>;
@@ -7,6 +8,7 @@ interface CountriesContextValue {
 }
 
 export const CountriesContext = createContext({} as CountriesContextValue);
+
 export function CountriesProvider({children}: { children: ReactNode }) {
   const [countriesList, setCountriesList] = useState<Map<string, CountryInfo>>(new Map());
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +27,7 @@ export function CountriesProvider({children}: { children: ReactNode }) {
           mappedCountries.set(country.cca3, country));
 
         setCountriesList(mappedCountries);
+        await sleep(1000);
         setIsLoading(false);
       } catch (error) {
         console.error(error);

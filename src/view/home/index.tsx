@@ -9,10 +9,10 @@ import {
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 
 import {Input} from "@/components/ui/input";
-import {useEffect, useState} from "react";
+import { useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {Skeleton} from "@/components/ui/skeleton";
 import {useCountries} from "@/context/CountriesContext.tsx";
+import {Spinner} from "@/components/ui/Spinner.tsx";
 
 interface Flag {
   png: string;
@@ -56,32 +56,30 @@ export interface CountryInfo {
 
 
 export function Home() {
-  const [countriesList, setCountriesList] = useState<CountryInfo[]>([]);
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [regionCountries, setRegionCountries] = useState<CountryInfo[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
-  const {countriesList: cList, isLoading} = useCountries();
+  const {countriesList, isLoading} = useCountries();
 
-  useEffect(() => {
-    setCountriesList([...cList.values()]);
+  const countries = useMemo(() => {
+    return [...countriesList.values()];
   }, [countriesList]);
+
 
   useEffect(() => {
     if (selectedRegion === "all") {
-      setRegionCountries(countriesList);
+      setRegionCountries(countries);
     } else {
-      const filtered = countriesList.filter(
+      const filtered = countries.filter(
         (country: CountryInfo) =>
           country.region.toLowerCase() === selectedRegion
       );
       setRegionCountries(filtered);
     }
-  }, [selectedRegion, countriesList]);
-
-
+  }, [selectedRegion, countries]);
 
   const filteredCountries =
     searchTerm.length > 0
@@ -104,21 +102,15 @@ export function Home() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex flex-col space-y-10">
-          <div className="space-y-4">
-            <Skeleton className="h-[40px] w-full rounded-xl"/>
-            <Skeleton className="h-[40px] w-full rounded-xl"/>
-          </div>
-          <Skeleton className="w-full h-[400px]"/>
-        </div>
+      <div className="flex-1 w-full flex items-center justify-center">
+        <Spinner/>
       </div>
     );
   }
 
   return (
     <main className="flex-1 max-w-[1440px] w-full m-auto px-4 xl:px-0">
-      <div
+    <div
         className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 justify-between px-2 items-center py-10 sticky top-0 bg-very-light-gray-light-mode-background dark:bg-very-dark-blue-dark-mode-background">
         <Input
           type="text"
@@ -152,7 +144,10 @@ export function Home() {
               handleNavigation(country);
             }}
             key={country.name.common}
-            className="overflow-hidden w-[300px] lg:w-auto h-[420px] dark:bg-dark-blue-dark-mode-elements bg-white border-0 shadow-md cursor-pointer"
+            className={`animate-slide-up-and-fade
+            overflow-hidden w-[300px] lg:w-auto h-96 sm:h-[420px]
+            dark:bg-dark-blue-dark-mode-elements bg-white
+            border-0 shadow-md cursor-pointer`}
           >
             <div className="aspect-video max-h-[40%] w-full">
               <img
