@@ -1,24 +1,29 @@
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {CountryInfo} from "../home";
 import {ArrowIcon} from "@/components/ui/ArrowIcon.tsx";
 import {useCountries} from "@/context/CountriesContext.tsx";
 import {useEffect, useState} from "react";
 import {Spinner} from "@/components/ui/Spinner.tsx";
-import {sleep} from "@/lib/utils.ts";
+import {formatPopulationNumber, sleep} from "@/lib/utils.ts";
 
 export function Details() {
   const {state} = useLocation();
-  const country: CountryInfo = state.country;
   const {countriesList} = useCountries();
   const [isLoading, setIsLoading] = useState(true);
 
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!state?.country) navigate("/");
+
     (async function initialLoad() {
       await sleep(1000);
       setIsLoading(false);
     })();
+
   }, []);
+
+  const country: CountryInfo = state?.country;
 
   if (!country || isLoading) {
     return (
@@ -49,12 +54,12 @@ export function Details() {
           <h2 className="text-xl font-bold mb-4">{country.name.common}</h2>
 
           <div className="flex flex-col gap-8 sm:flex-row sm:gap-16">
-            <div>
+            <div className="space-y-2">
               <div>
                 <strong>Native Name:</strong> {nativeName}
               </div>
               <div>
-                <strong>Population:</strong> {country.population}
+                <strong>Population:</strong> {formatPopulationNumber(country.population)}
               </div>
               <div>
                 <strong>Region:</strong> {country.region}
@@ -67,7 +72,7 @@ export function Details() {
               </div>
             </div>
 
-            <div>
+            <div className="space-y-2">
               <div>
                 <strong>Top Level Domain:</strong> {country.tld}
               </div>

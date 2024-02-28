@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useCountries} from "@/context/CountriesContext.tsx";
 import {Spinner} from "@/components/ui/Spinner.tsx";
+import {formatPopulationNumber} from "@/lib/utils.ts";
 
 interface Flag {
   png: string;
@@ -88,9 +89,6 @@ export function Home() {
       )
       : regionCountries;
 
-  function formatPopulationNumber(population: number) {
-    return new Intl.NumberFormat("de-DE").format(population);
-  }
 
   function handleRegionChange(region: string) {
     setSelectedRegion(region);
@@ -137,7 +135,7 @@ export function Home() {
       </div>
 
       <div
-        className="grid grid-cols-1 place-items-center lg:place-items-stretch  sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 px-2">
+        className="grid grid-cols-1 place-items-center lg:place-items-stretch sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 sm:gap-14 px-2">
         {filteredCountries?.map((country: CountryInfo) => (
           <Card
             onClick={() => {
@@ -145,7 +143,7 @@ export function Home() {
             }}
             key={country.name.common}
             className={`animate-slide-up-and-fade
-            overflow-hidden w-[300px] lg:w-auto h-96 sm:h-[420px]
+            overflow-hidden w-[300px] lg:w-auto h-96 sm:h-[375px]
             dark:bg-dark-blue-dark-mode-elements bg-white
             border-0 shadow-md cursor-pointer`}
           >
@@ -157,7 +155,7 @@ export function Home() {
               />
             </div>
 
-            <CardHeader>
+            <CardHeader className="mt-4">
               <CardTitle>{country.name.common}</CardTitle>
             </CardHeader>
 

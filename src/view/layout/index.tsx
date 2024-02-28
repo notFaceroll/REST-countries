@@ -9,7 +9,7 @@ export function Layout() {
     <div className={theme}>
       <div className="flex flex-col min-h-screen pb-8 dark:bg-very-dark-blue-dark-mode-background bg-very-light-gray-light-mode-background">
         <header className="flex items-center shadow-md h-16 px-4 mb-2 dark:bg-dark-blue-dark-mode-elements ">
-          <div className="max-w-[1440px] w-full flex justify-between m-auto text-white px-2">
+          <div className="max-w-[1440px] w-full flex justify-between m-auto text-white px-4">
             <h1 className="dark:text-white text-very-dark-blue-light-mode-text text-xl font-bold">
               Where in the world?
             </h1>
@@ -21,8 +21,8 @@ export function Layout() {
                 )
               }
             >
-              {theme === "dark" ? <Sun /> : <Moon />}
-              <span>{theme === "dark" ? "Light" : "Dark"} Mode</span>
+              {theme === "dark" ? <Moon /> : <Sun />}
+              <span>{theme === "dark" ? "Dark" : "Light"} Mode</span>
             </button>
           </div>
         </header>
